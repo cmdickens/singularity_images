@@ -1,0 +1,23 @@
+BootStrap: docker
+From: rockylinux:8.6
+
+%apprun R
+  exec R "${@}"
+
+%apprun Rscript
+  exec Rscript "${@}"
+
+%runscript
+  exec R "${@}"
+
+%post
+  export TZ="America/Chicago"
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+  dnf makecache --refresh
+  dnf install -y tzdata gnupg2 glibc-langpack-en
+
+  # for rstudio
+  yum install wget which -y
+  wget https://download2.rstudio.org/server/rhel8/x86_64/rstudio-server-rhel-2022.07.2-576-x86_64.rpm
+  yum install rstudio-server-rhel-2022.07.2-576-x86_64.rpm -y
